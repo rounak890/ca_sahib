@@ -1,0 +1,198 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- Notification Banner -->
+<div class="w-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 text-center py-2 mb-6 shadow-sm font-semibold flex items-center justify-center gap-2 rounded-b-lg">
+    <span class="text-lg">🎉</span> Woho! We update the data every week
+    <span class="text-xl">🤩</span>
+</div>
+
+<section class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-2">
+        <span class="bg-red-100 p-2 rounded-lg">
+      <svg
+        class="w-7 h-7 text-red-500"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="4" />
+        <path d="M8 2v4M16 2v4" />
+      </svg>
+    </span>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">
+            Compliance Calendar
+        </h1>
+    </div>
+    <p class="text-gray-500 mb-8">
+        Track compliance deadlines and manage regulatory requirements
+    </p>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl shadow p-5 flex flex-col items-center">
+            <div class="text-gray-500 mb-1">Total Tasks</div>
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-gray-800">{{ total_compliances }}</span
+        >
+        <svg
+          class="w-6 h-6 text-blue-500"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="4" />
+          <path d="M8 2v4M16 2v4" />
+        </svg>
+      </div>
+    </div>
+    <!-- <div class="bg-white rounded-xl shadow p-5 flex flex-col items-center">
+        <div class="text-gray-500 mb-1">Overdue</div>
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-bold text-red-500">1</span>
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+            </div>
+        </div> -->
+        <div class="bg-white rounded-xl shadow p-5 flex flex-col items-center">
+            <div class="text-gray-500 mb-1">Completed</div>
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-green-500">{{ sync_obj.completed_number }}</span>
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9 12l2 2l4-4" />
+                </svg>
+            </div>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow p-5 flex flex-col items-center">
+          <div class="text-gray-500 mb-1">Last Updated</div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl font-bold text-cyan-500">{{ sync_obj.last_fetched }}</span>
+                    <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+                </div>
+            </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Calendar Section -->
+        <div class="md:col-span-2">
+            <div class="bg-white rounded-xl shadow p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Compliance Calendar</h2>
+                        <p class="text-gray-400 text-sm">
+                            Visual timeline of all compliance tasks
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1 rounded-lg bg-blue-700 text-white font-semibold shadow">
+              Month
+            </button>
+                        <!-- <button class="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200">Week</button> -->
+                    </div>
+                </div>
+                <!-- Example Task Card -->
+                {% for model in models %}
+                <div class="bg-white border rounded-lg p-5 mb-4 shadow flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+                            <span class="font-semibold text-gray-800">{{ model.heading }}</span> {% if model.tag == "high" %}
+                            <span class="ml-2 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-semibold">high</span> {% elif model.tag == "medium" %}
+                            <span class="ml-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">medium</span>
+                            {% else %}
+                            <span class="ml-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">low</span> {% endif %}
+
+
+                            {% if not model.completed %}
+                            <span class="ml-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">Pending</span>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600 mb-1">
+
+                            <!-- <div><span class="font-medium">Client:</span> ABC Corporation</div> -->
+                            <div>
+                                <span class="font-medium">Due Date:</span> {{ model.date}} - {{ model.month }} - {{ model.year }}
+                            </div>
+                            <div><span class="font-medium">Type:</span> {{ model.type }}</div>
+                        </div>
+                        <div class="text-gray-400 text-xs">{{ model.description }}</div>
+                    </div>
+                    <div class="flex gap-2 mt-4 md:mt-0">
+
+
+                        <!-- <button class="px-4 py-1 rounded-lg bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition">
+              Mark Complete
+            </button> -->
+                    {% if not model.completed %}
+        <form method="post" action="{% url 'mark_complete' model.id %}">
+            {% csrf_token %}
+            <button type="submit" class="px-4 py-1 rounded-lg bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition">
+                Mark Complete
+            </button>
+        </form>
+        {% else %}
+        <span class="px-4 py-1 rounded-lg bg-green-600 text-white font-semibold">Completed</span>
+        {% endif %}
+                        <!-- <button class="px-4 py-1 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition">Edit</button> -->
+                    </div>
+                </div>
+
+                {% endfor %}
+                <!-- Add more tasks here as needed -->
+            </div>
+        </div>
+        <!-- Quick Actions -->
+        <div>
+            <div class="bg-white rounded-xl shadow p-6 mb-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
+                <button class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold px-4 py-2 rounded-lg mb-3 shadow hover:from-blue-700 hover:to-blue-500 transition">
+          <span class="text-xl">+</span> Add New Task
+        </button>
+                <button class="w-full flex items-center gap-2 bg-gray-100 text-gray-700 font-semibold px-4 py-2 rounded-lg mb-3 hover:bg-gray-200 transition">
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+            />
+          </svg>
+          Set Reminders
+        </button>
+                <button class="w-full flex items-center gap-2 bg-gray-100 text-gray-700 font-semibold px-4 py-2 rounded-lg hover:bg-gray-200 transition">
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="4" />
+            <path d="M8 2v4M16 2v4" />
+          </svg>
+          Export Calendar
+        </button>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+</section>

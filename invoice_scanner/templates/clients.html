@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-6">
+        <span class="bg-blue-100 p-2 rounded-lg">
+            <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 11c1.657 0 3-1.343 3-3s-1.343-3-3-3 -3 1.343-3 3 1.343 3 3 3z" />
+                <path d="M4 20v-1c0-2.761 2.239-5 5-5h6c2.761 0 5 2.239 5 5v1" />
+            </svg>
+        </span>
+        <h1 class="text-3xl font-bold text-gray-800">Client Management</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- LHS: Client Cards -->
+        <div class="md:col-span-2 space-y-4">
+            {% if clients %}
+                {% for client in clients %}
+                <div class="bg-white border rounded-xl shadow p-5 hover:shadow-lg transition">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold text-gray-800">{{ client.name }}</h3>
+                        <span class="text-xs text-gray-500">{{ client.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Email:</strong> {{ client.email }}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Contact:</strong> {{ client.contact }}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Address:</strong> {{ client.address }}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Business Name:</strong> {{ client.business_name }}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>Business Type:</strong> {{ client.business_type }}</p>
+                    <p class="text-sm text-gray-600 mb-1"><strong>GST No.:</strong> {{ client.gst_number }}</p>
+                    <p class="text-sm text-gray-600"><strong>PAN No.:</strong> {{ client.pan_number }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-500">No clients added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- RHS: Add Client -->
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Client</h2>
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <input type="text" name="name" placeholder="Client Name" required class="w-full px-4 py-2 border rounded-lg">
+                    <input type="email" name="email" placeholder="Email" required class="w-full px-4 py-2 border rounded-lg">
+                    <input type="text" name="contact" placeholder="Contact Number" required class="w-full px-4 py-2 border rounded-lg">
+                    <textarea name="address" placeholder="Address" rows="2" required class="w-full px-4 py-2 border rounded-lg"></textarea>
+                    <input type="text" name="business_name" placeholder="Business Name" required class="w-full px-4 py-2 border rounded-lg">
+                    <input type="text" name="business_type" placeholder="Business Type" required class="w-full px-4 py-2 border rounded-lg">
+                    <input type="text" name="gst_number" placeholder="GST Number" required class="w-full px-4 py-2 border rounded-lg">
+                    <input type="text" name="pan_number" placeholder="PAN Number" required class="w-full px-4 py-2 border rounded-lg">
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">
+                        Add Client
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

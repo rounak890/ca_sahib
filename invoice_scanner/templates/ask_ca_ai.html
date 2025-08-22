@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-white px-4 py-12">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border border-blue-100">
+        
+        <!-- Heading -->
+        <div class="flex flex-col items-center mb-6">
+            <div class="bg-blue-100 rounded-full p-3 mb-3">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2V7a2 2 0 00-2-2h-1.5l-.71-.71A1 1 0 0013.09 4H10.91a1 1 0 00-.7.29L9.5 5H8a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-1">CA Assistant Chat</h1>
+            <p class="text-gray-500 text-center">Ask anything about your financial data</p>
+        </div>
+
+        <!-- Chat Box -->
+        <div id="chat-box" class="h-80 overflow-y-auto bg-blue-50 p-4 rounded-lg space-y-4 text-sm border border-blue-200">
+            <div class="flex items-start space-x-2">
+                <div class="bg-cyan-100 text-cyan-900 px-4 py-2 rounded-xl max-w-sm">
+                    Hello! I'm your assistant. Ask me anything about your bank statements.
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="mt-4 flex items-center space-x-2">
+            <input id="chat-input" type="text" placeholder="Type your message..."
+                class="flex-grow px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <button id="chat-send-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+                Send
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+
+    // const chatSocket = new WebSocket(
+    //     'ws://' + window.location.host + '/ws/ca_sahib/'  // Adjust the path as needed
+    // );
+    const chatSocket = new WebSocket("ws://127.0.0.1:8000/ws/ca_sahib/");
+
+
+    chatSocket.onmessage = function(e) {
+        console.log('millo');
+        const data = JSON.parse(e.data);
+        const bubble = document.createElement('div');
+        bubble.className = 'flex items-start space-x-2';
+        bubble.innerHTML = `
+            <div class="bg-cyan-100 text-cyan-900 px-4 py-2 rounded-xl max-w-sm">
+                ${data.message}
+            </div>
+        `;
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+
+    sendBtn.onclick = function() {
+        const message = input.value.trim();
+        if (message === '') return;
+
+        // User bubble
+        const bubble = document.createElement('div');
+        bubble.className = 'flex items-end justify-end space-x-2';
+        bubble.innerHTML = `
+            <div class="bg-blue-100 text-blue-900 px-4 py-2 rounded-xl max-w-sm">
+                ${message}
+            </div>
+        `;
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        chatSocket.send(JSON.stringify({ 'message': message }));
+        input.value = '';
+    };
+</script>
+
+{% endblock %}

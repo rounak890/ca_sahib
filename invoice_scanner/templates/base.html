@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CA Sahib</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'imgs/cropped_circle_image.png' %}">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+<!-- ✅ Navbar -->
+<header class="bg-white/90 backdrop-blur shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-4">
+        <!-- 🔷 Logo -->
+        <div class="flex items-center gap-2">
+            <img src="{% static 'imgs/cropped_circle_image.png' %}" class="w-10 h-10 rounded-full shadow" alt="Logo">
+            <span class="text-2xl font-extrabold text-blue-700">CA Sahib</span>
+        </div>
+
+        <!-- 📱 Hamburger (mobile only) -->
+        <div class="md:hidden">
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 🖥 Desktop Menu -->
+        <nav class="hidden md:flex items-center gap-3">
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">Home</a>
+                <a href="{% url 'invoice_input' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">Invoice Scanner</a>
+                <a href="{% url 'bank_statement_analyzer' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-green-50 hover:text-green-700 transition">Bank Analyzer</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-yellow-50 hover:text-yellow-700 transition">TDS Calculator</a>
+                <a href="{% url 'documents' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-purple-50 hover:text-purple-700 transition">Documents</a>
+                <a href="{% url 'compliance' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-red-50 hover:text-red-700 transition">Compliance</a>
+                <a href="{% url 'clients' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-yellow-50 hover:text-yellow-700 transition">Clients</a>
+                <a href="{% url 'profile' %}" class="px-3 py-2 rounded-lg text-gray-700 font-medium hover:bg-purple-50 hover:text-purple-700 transition">Profile</a>
+
+                <!-- 🌈 Ask CA AI Button -->
+                <a href="{% url 'ask_ca_ai' %}" class="outer-cont flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="mr-1">
+                        <path d="M9.1 5.4c.6-1.7 3-1.8 3.7-.2l.8 2.4a4 4 0 002.3 2.4l2.4.8c1.8.6 1.8 3 0 3.7l-2.4.8a4 4 0 00-2.4 2.3l-.8 2.4c-.6 1.8-3 1.8-3.7 0l-.8-2.4a4 4 0 00-2.3-2.4l-2.4-.8c-1.8-.6-1.8-3 0-3.7l2.4-.8a4 4 0 002.3-2.4l.8-2.4z"/>
+                    </svg>
+                    Ask CA AI
+                </a>
+
+                <!-- 🔒 Logout Button -->
+                <form action="{% url 'logout' %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="ml-2 text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-600 hover:to-blue-700 font-medium rounded-lg text-sm px-4 py-2 transition">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <!-- 🔑 Login Button -->
+                <a href="{% url 'login' %}" class="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-600 hover:to-blue-700 font-medium rounded-lg text-sm px-4 py-2 transition">
+                    Login
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <!-- 📱 Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+        <div class="flex flex-col space-y-2">
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-100">Home</a>
+                <a href="{% url 'invoice_input' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-blue-100">Invoice Scanner</a>
+                <a href="{% url 'bank_statement_analyzer' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-green-100">Bank Analyzer</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-yellow-100">TDS Calculator</a>
+                <a href="{% url 'documents' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-100">Documents</a>
+                <a href="{% url 'compliance' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-red-100">Compliance</a>
+                <a href="{% url 'clients' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-yellow-100">Clients</a>
+                <a href="{% url 'profile' %}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-purple-100">Profile</a>
+                <a href="{% url 'ask_ca_ai' %}" class="outer-cont w-full text-center mt-2">Ask CA AI</a>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="mt-2 text-white w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-600 hover:to-blue-700 font-medium rounded-lg text-sm px-4 py-2 transition">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}"
+                   class="text-white w-full text-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-blue-600 hover:to-blue-700 font-medium rounded-lg text-sm px-4 py-2 transition">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- ✅ Content block -->
+{% block content %}{% endblock content %}
+
+<!-- ✨ Ask CA AI Button Style -->
+<style>
+.outer-cont {
+  width: fit-content;
+  padding: 8px 16px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  position: relative;
+  background: linear-gradient(90deg, #5bfcc4, #f593e4, #71a4f0);
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow:
+    inset 0px 0px 5px #ffffffa9,
+    inset 0px 25px 15px #000,
+    0px 5px 5px #000000cc;
+  text-shadow: 1px 1px 1px #000;
+}
+.outer-cont:hover {
+  filter: brightness(1.1);
+}
+</style>
+
+</body>
+</html>

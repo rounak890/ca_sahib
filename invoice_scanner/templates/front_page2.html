@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #canvas3d {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+  </style>
+     {% if messages %}
+    {% for message in messages %}
+        <div class="p-4 rounded-lg text-sm font-medium
+            {% if message.tags == 'success' %}
+                bg-green-100 text-green-800
+            {% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'home' %}">
+  <canvas id="canvas3d"></canvas>
+</a>
+
+<script type="module">
+  import { Application } from 'https://unpkg.com/@splinetool/runtime@latest/build/runtime.js';
+
+  const canvas = document.getElementById('canvas3d');
+  const app = new Application(canvas);
+
+  app.load('https://prod.spline.design/tMZSbVmMOE1v0cMp/scene.splinecode').then(() => {
+    // Disable Spline's built-in camera controls
+    app.controls.enabled = false;
+  });
+
+  // 🚫 Prevent user from zooming (scroll wheel) or moving the camera
+  canvas.addEventListener('onClick', (e) => {
+    // Handle click events if needed
+    e.preventDefault();
+    console.log('Canvas clicked:', e);
+    window.location.href = '/'
+  });
+</script>
+
+
+{% endblock content %}

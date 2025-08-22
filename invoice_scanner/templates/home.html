@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %} {% block content %}
+<section class="max-w-6xl mx-auto px-4 py-12">
+    <!-- Hero Section -->
+     {% if messages %}
+    {% for message in messages %}
+        <div class="p-4 rounded-lg text-sm font-medium
+            {% if message.tags == 'success' %}
+                bg-green-100 text-green-800
+            {% elif message.tags == 'error' %}
+                bg-red-100 text-red-800
+            {% elif message.tags == 'warning' %}
+                bg-yellow-100 text-yellow-800
+            {% else %}
+                bg-blue-100 text-blue-800
+            {% endif %}
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4">Welcome to <span class="text-blue-600">CA Sahib</span></h1>
+        <p class="text-lg text-gray-600">Your comprehensive assistant for chartered accounting tasks</p>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">247</div>
+            <div class="text-gray-700 font-medium">Invoices Processed</div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">32</div>
+            <div class="text-gray-700 font-medium">Bank Statements Analyzed</div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+            <div class="text-3xl font-bold text-yellow-600 mb-2">8</div>
+            <div class="text-gray-700 font-medium">Pending Compliance Tasks</div>
+        </div>
+    </div>
+
+    <!-- Core Modules Section -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Core Modules</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Invoice Scanner Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center mb-4">
+                <span class="w-10 h-10 mr-3 flex items-center justify-center bg-blue-100 rounded-full">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2V7a2 2 0 00-2-2h-1.5l-.71-.71A1 1 0 0013.09 4H10.91a1 1 0 00-.7.29L9.5 5H8a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </span>
+                <span class="text-xl font-semibold text-blue-700">GST Invoice Scanner</span>
+            </div>
+            <p class="text-gray-600 mb-4">Upload and validate GST invoices with OCR technology.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">OCR Processing</span>
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">GSTIN Validation</span>
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Excel Export</span>
+            </div>
+            <a href="{% url 'invoice_input' %}" class="mt-auto inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Open Module &rarr;</a>
+        </div>
+        <!-- Bank Analyzer Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center mb-4">
+                <span class="w-10 h-10 mr-3 flex items-center justify-center bg-green-100 rounded-full">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2M16 11V7a4 4 0 00-8 0v4M12 17v.01"></path></svg>
+                </span>
+                <span class="text-xl font-semibold text-green-700">Bank Statement Analyzer</span>
+            </div>
+            <p class="text-gray-600 mb-4">Analyze bank transactions and categorize automatically.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Auto Categorization</span>
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Cashflow Charts</span>
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Duplicate Detection</span>
+            </div>
+            <a href="#" class="mt-auto inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Open Module &rarr;</a>
+        </div>
+        <!-- TDS Calculator Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center mb-4">
+                <span class="w-10 h-10 mr-3 flex items-center justify-center bg-yellow-100 rounded-full">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                </span>
+                <span class="text-xl font-semibold text-yellow-700">TDS Calculator</span>
+            </div>
+            <p class="text-gray-600 mb-4">Easily calculate TDS for your clients with up-to-date rules.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Section-wise Calculation</span>
+                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">Instant Reports</span>
+            </div>
+            <a href="#" class="mt-auto inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">Open Module &rarr;</a>
+        </div>
+        <!-- Documents Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center mb-4">
+                <span class="w-10 h-10 mr-3 flex items-center justify-center bg-purple-100 rounded-full">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 7h10M7 11h10M7 15h6"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+                </span>
+                <span class="text-xl font-semibold text-purple-700">Documents</span>
+            </div>
+            <p class="text-gray-600 mb-4">Manage, upload, and share all your important documents securely.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">Secure Storage</span>
+                <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">Easy Sharing</span>
+            </div>
+            <a href="#" class="mt-auto inline-block bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Open Module &rarr;</a>
+        </div>
+        <!-- Compliance Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center mb-4">
+                <span class="w-10 h-10 mr-3 flex items-center justify-center bg-red-100 rounded-full">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2l4-4"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                </span>
+                <span class="text-xl font-semibold text-red-700">Compliance</span>
+            </div>
+            <p class="text-gray-600 mb-4">Stay updated and manage all your compliance requirements in one place.</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Reminders</span>
+                <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">Status Tracking</span>
+            </div>
+            <a href="{% url 'compliance' %}" class="mt-auto inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Open Module &rarr;</a>
+        </div>
+    </div>
+</section>
+{% endblock content %}

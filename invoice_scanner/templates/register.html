@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white py-12 px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        {% if messages %}
+    {% for message in messages %}
+        <div class="p-4 rounded-lg text-sm font-medium
+            {% if message.tags == 'success' %}
+                bg-green-100 text-green-800
+            {% elif message.tags == 'error' %}
+                bg-red-100 text-red-800
+            {% elif message.tags == 'warning' %}
+                bg-yellow-100 text-yellow-800
+            {% else %}
+                bg-blue-100 text-blue-800
+            {% endif %}
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-green-700">Create Your Account</h2>
+            <p class="text-gray-600 text-sm">Join the CA Sahib community</p>
+        </div>
+
+        <form method="POST" class="space-y-4" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Username</label>
+                {{ form.username|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.username.errors }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Email</label>
+                {{ form.email|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.email.errors }}
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">First Name</label>
+                {{ form.first_name|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.first_name.errors }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Last Name</label>
+                {{ form.last_name|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.last_name.errors }}
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Password</label>
+                {{ form.password1|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Confirm Password</label>
+                {{ form.password2|add_class:"w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none" }}
+                {{ form.password2.errors }}
+            </div>
+
+            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">Register</button>
+
+            <p class="text-sm text-center text-gray-500 mt-4">
+                Already have an account? <a href="{% url 'login' %}" class="text-green-600 font-semibold hover:underline">Login</a>
+            </p>
+        </form>
+    </div>
+</section>
+{% endblock %}
