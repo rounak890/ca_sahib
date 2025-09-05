@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-cyan-50 to-white px-4 py-12">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-blue-100">
+        
+        <!-- Heading -->
+        <div class="flex flex-col items-center mb-6">
+            <div class="bg-blue-100 rounded-full p-3 mb-3">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 4v16m8-8H4"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-gray-800 mb-1">TDS Section Finder</h1>
+            <p class="text-gray-500 text-center">Enter transaction description to get TDS section</p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="border border-blue-200 rounded-lg p-6 bg-blue-50/50 mb-4">
+            <form id="tds-form" class="flex flex-col space-y-4">
+                {% csrf_token %}
+                
+                <textarea id="transaction-desc" name="description" rows="3" 
+                    placeholder="e.g., Payment to contractor for services"
+                    class="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Get TDS Section
+                </button>
+            </form>
+        </div>
+
+        <!-- Result -->
+        <div id="tds-result" class="hidden border border-green-200 rounded-lg p-4 bg-green-50 text-green-800">
+            <h2 class="font-bold mb-2">Result:</h2>
+            <p><strong>Section:</strong> <span id="result-section"></span></p>
+            <p><strong>Details:</strong> <span id="result-details"></span></p>
+            <p><strong>Next Step:</strong> <span id="result-continue"></span></p>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("tds-form").addEventListener("submit", async function(e) {
+    console.log('button clicked');
+    e.preventDefault();
+
+    const desc = document.getElementById("transaction-desc").value;
+    if (!desc) {
+        alert("Please enter a transaction description.");
+        return;
+    }
+
+    console.log("description:", desc);
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    const response = await fetch("{% url 'tds' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({ description: desc })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        document.getElementById("tds-result").classList.remove("hidden");
+        document.getElementById("result-section").textContent = data.section;
+        document.getElementById("result-details").textContent = data.details;
+        document.getElementById("result-continue").textContent = "Continue to this website :- https://incometaxindia.gov.in/Pages/tools/tds-calculator.aspx";
+    } else {
+        alert("No matching TDS section found.");
+    }
+});
+</script>
+
+{% endblock %}

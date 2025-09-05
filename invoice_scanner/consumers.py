@@ -5,10 +5,13 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import os
 
-API_KEY = 'AIzaSyC4Z7FFNaEENHLUl_XqvvK79BCoXXbS3uA'
+API_KEY = 'AIzaSyBm3jfoQsO3FG2lKrXzeQEzDzD25RMZb0s'
 os.environ['GEMINI_API_KEY'] = API_KEY
+print("the api lkey of gemini: -> ",os.environ['GEMINI_API_KEY'] )
+
 
 client = genai.Client()
+print("client connnectede")
 # PROMPT = 'you are a proffessional CA in india and know everything about accounting and finance. One of your closest person\
 #     want to talk to you to resolve there queries regarding CA, laws, gst etc. Be kind and helpful to them, you have all the knowledge\
 #          laws related to it, just answer the queries dont talk anything else  '
@@ -18,7 +21,14 @@ PROMPT = (
     "Be helpful and informative, and avoid unrelated or off-topic conversation."
 )
 
-chat = client.chats.create(model="gemini-2.5-flash")
+## HERE I UPLOAD THE TDS AND GST RATES PDF TO GEMINI
+tds_file = client.files.upload(file="static/docs/tds_rates.pdf")
+print("file uploaded")
+
+# chat = client.chats.create(
+#     model="gemini-2.5-flash"
+#     )
+print("chat started")
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -35,6 +45,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
         print("WebSocket Connected")
 
+        self.conversation_history = [
+            {"role": "user", "parts": [PROMPT]}
+        ]
+
     async def disconnect(self, close_code):
         # Remove the channel from the group
         await self.channel_layer.group_discard(
@@ -48,9 +62,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message = data.get("message")
 
+
+        # Add user message to history
+        self.conversation_history.append({"role": "user", "parts": [message]})
+
+
         # Echo with simulated AI response
-        response = chat.send_message(PROMPT + message)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                tds_file,
+                *self.conversation_history
+            ],
+        )
         ai_response = response.text
+
+        # Add AI response to history
+        self.conversation_history.append({"role": "model", "parts": [ai_response]})
+
 
         # Send response back to group (and then to WebSocket)
         await self.channel_layer.group_send(

@@ -15,7 +15,7 @@ urlpatterns = [
     path('front-page', views.front_page, name='front_page'),  
     path('front-page-2/', views.front_page2, name='front_page2'),  
     path('clients/', views.clients, name='clients'),
-
+    path('tds/', views.tds, name = 'tds')
 
 ]
 

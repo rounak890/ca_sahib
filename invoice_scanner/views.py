@@ -2,8 +2,10 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.template import loader
 # from .forms import FileUploadForm
 from .models import SyncStatus, Compliances_Model, DocumentsModel, DocumentSync
+from django.http import JsonResponse
 
 from datetime import datetime
+import json
 from django.db.models import Q
 
 import uuid
@@ -30,7 +32,7 @@ import numpy as np
 
 from .utils.bank_graph import plot_bar_graph, plot_distribution_graph, plot_pie_chart
 from .utils.bank_anomalies import find_anomalies_df, find_duplicates_df, bounced_df
-
+from .utils.tds_section import get_tds_section_details
 
 ### MODEL FOR MAKING EMBEDDINGS
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
@@ -132,6 +134,22 @@ def front_page2(request):
 def ask_ca_ai(request):
     return render(request, 'ask_ca_ai.html')
 
+
+# TDS PART
+def tds(request):
+    # "Later continure to this webiste :- https://incometaxindia.gov.in/Pages/tools/tds-calculator.aspx"
+    if request.method == 'POST':
+        print('got post')
+        # description = request.POST.get('description')
+        data = json.loads(request.body)
+        description = data.get("description", "").strip()
+
+        print('got the description:- ', description)
+        section, details = get_tds_section_details(description)
+        # return render(request, 'tds.html', context={'section': section, 'details': details, 'description': description})
+        return JsonResponse({"success": True, 'section': section, 'details': details})
+    
+    return render(request, 'tds.html')
 
 
 # Create your views here.
