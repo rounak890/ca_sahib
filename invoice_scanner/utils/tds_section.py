@@ -1,5 +1,5 @@
 from google import genai
-
+import json
 
 tds_sections = {
     "192A": "Payment of taxable accumulated balance of provident fund",
@@ -36,7 +36,8 @@ tds_sections = {
     "194O(alt)": "Purchase of goods (Value exceeding 50 lakhs or more)",  # looks like meant 194Q but given as 1940
     "194Q": "Purchase of goods (Value exceeding 50 lakhs or more)",
     "194R": "TDS on benefit/perquisite paid to Business/Profession",
-    "194S": "TDS from payment on transfer of Virtual Digital Asset"
+    "194S": "TDS from payment on transfer of Virtual Digital Asset",
+    "FREE" : "No TDS is applicable on your transaction"
 }
 
 import os
@@ -53,11 +54,16 @@ def get_tds_section_details(description):
     if not description or description.strip() == "":
         return None, "No description provided."
     
+    sections_text = json.dumps(tds_sections, indent=2)
+    
     response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=[
-                *tds_sections,
-                "given the tds sections and description of the user transaction, you have to accurately choose the section applicable and return the key of the section and return only one section , don't output anything else , wisely choose the section you can not afford a mistake , following is the decsription of transaction ->" + str(description)
+                f"""You are given TDS sections in JSON form below: {sections_text} given the tds sections and description of the 
+                user transaction, you have to accurately choose the section applicable and return the key of the section and 
+                return only one section , don't output anything else , wisely choose the section you can not afford a mistake, 
+                if no tds section is applicable return FREE section , following is the decsription of transaction ->
+                {str(description)}"""
             ],
         )
     

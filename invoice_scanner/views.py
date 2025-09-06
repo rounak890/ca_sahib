@@ -19,6 +19,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from .utils.comp_getter import comp_fetch_and_extract, is_good_compliance_date_check
+from .utils.invoice_extractor import extract_invoice_data
 
 from django.contrib.auth.decorators import login_required
 
@@ -34,10 +35,19 @@ from .utils.bank_graph import plot_bar_graph, plot_distribution_graph, plot_pie_
 from .utils.bank_anomalies import find_anomalies_df, find_duplicates_df, bounced_df
 from .utils.tds_section import get_tds_section_details
 
+from PIL import Image
+import io
+
+import matplotlib
+from loguru import logger
+
+logger.add('main_dev.log')
+
 ### MODEL FOR MAKING EMBEDDINGS
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 pt= r'C:\Users\os\Desktop\ca_sahib\poppler-24.08.0\Library\bin'
+matplotlib.use("Agg")  # ✅ Non-GUI backend
 
 
 @lru_cache(maxsize=128)
@@ -139,14 +149,21 @@ def ask_ca_ai(request):
 def tds(request):
     # "Later continure to this webiste :- https://incometaxindia.gov.in/Pages/tools/tds-calculator.aspx"
     if request.method == 'POST':
-        print('got post')
+        logger.info('got post')
         # description = request.POST.get('description')
         data = json.loads(request.body)
         description = data.get("description", "").strip()
 
-        print('got the description:- ', description)
-        section, details = get_tds_section_details(description)
+        logger.info(f'got the description:- {description}', )
+        try:
+            section, details = get_tds_section_details(description)
+        except Exception as e:
+            logger.error(f"Error getting TDS section details: {e}")
+            return JsonResponse({"success": False, "error": "Error processing the request."})
+        
         # return render(request, 'tds.html', context={'section': section, 'details': details, 'description': description})
+
+        logger.info(f'section:- {section}, details:- {details}')
         return JsonResponse({"success": True, 'section': section, 'details': details})
     
     return render(request, 'tds.html')
@@ -166,13 +183,44 @@ def invoice_process(request):
     if request.method == 'POST':
         file = request.FILES.get('invoice_file')
         obj = DocumentsModel.objects.create(file = file)
-        print("File uploaded successfully")
-        print(file.content_type)
-        print(type(file))
-        print(file)
+        logger.info("File uploaded successfully")
+        # logger.info(file.content_type)
+        # logger.info(type(file))
+        # logger.info(file)
         # return redirect('upload_success')  # optional success page
 
-    
+        img = Image.open(file)
+        # Save the image to a BytesIO object in a specific format
+        byte_arr = io.BytesIO()
+        img.save(byte_arr, format='PNG') # Or 'JPEG', 'GIF', etc.
+        image_bytes = byte_arr.getvalue()
+
+        # logger.info(type(image_bytes))
+
+        data_json = extract_invoice_data(image_bytes)
+
+        # Make sure DataFrame is well-formed
+        if isinstance(data_json, dict):
+            df = pd.DataFrame([data_json])
+        else:
+            df = pd.DataFrame(data_json)
+
+
+        html_df = df.to_html(
+            classes=(
+                "min-w-full table-auto text-sm text-left text-gray-700 "
+                "border border-gray-200 divide-y divide-gray-100"
+),
+            # classes="table table-bordered", 
+            index=False, 
+            border=1, 
+            justify='left'
+        )
+
+        logger.info(f"Done processing invoice, {html_df}, DATAFRAME : {df}")
+
+        return render(request, 'invoice_process.html', context={'data_json': data_json, 'html_df': html_df})
+        
         
     return render(request, 'invoice_process.html', {})
 
@@ -232,7 +280,7 @@ def documents(request):
     
     if request.method == 'POST':
         if 'upload_doc' in request.POST:
-            print("uploaded file")
+            logger.info("uploaded file")
             fil = request.FILES.get('doc_upload')
             obj = DocumentsModel.objects.create(file = fil)
             obj.save()
@@ -266,31 +314,31 @@ def documents(request):
             index.add(np.array([embedding]))
             doc_obj.d[faiss_index] = str(obj.id)
             faiss.write_index(index, doc_obj.name)
-            print("Done uplaoding process")
+            logger.info("Done uplaoding process")
             
             # obj.save()
             doc_obj.save()
 
         # elif 'semantic_search' in request.POST :
         #     # handle searching
-        #     print('kejb')
-        #     print(f"searched for : {request.POST.get('search')}")
+        #     logger.info('kejb')
+        #     logger.info(f"searched for : {request.POST.get('search')}")
 
     elif request.method == 'GET'  and 'semantic_search' in request.GET:
-        # print('kejb')
-        print(f"searched for : {request.GET.get('search')}")
+        # logger.info('kejb')
+        logger.info(f"searched for : {request.GET.get('search')}")
         query = request.GET.get('search')
         obj = DocumentSync.objects.get(name = 'vector_index.faiss')
 
         index = faiss.read_index(obj.name)
         search = model.encode(query)
         D,I = index.search(np.array([search]), k = min([5, COUNT_ALL_DOCS]))
-        print(D, I)
+        logger.info(f"{D}, {I}")
 
         d = dict(obj.d)
 
         final_lst = []
-        print(d)
+        logger.info(d)
 
         # Zip distances and indices together, and sort by distance
         results = sorted(zip(D[0], I[0]), key=lambda x: x[0])
@@ -302,8 +350,8 @@ def documents(request):
             if idx_str in d:
                 final_lst.append(uuid.UUID(d[idx_str]))
 
-        print(final_lst)
-        # print(final_lst)
+        logger.info(final_lst)
+        # logger.info(final_lst)
 
         all_objs = DocumentsModel.objects.filter(id__in = final_lst)
         
@@ -311,7 +359,7 @@ def documents(request):
         preserved_order = Case(*[When(id=val, then=pos) for pos, val in enumerate(final_lst)])
         all_objs = all_objs.order_by(preserved_order)
 
-        print(len(all_objs))
+        logger.info(len(all_objs))
     return render(request, 'documents.html', context = {
         'objs' : all_objs, 
         'COUNT_ALL_DOCS' : COUNT_ALL_DOCS,
@@ -343,7 +391,7 @@ def bank_statement_analyzer_process(request):
             if j.item() > 1:
                 final[i] = int(j)
 
-        print(final)
+        logger.info(final)
 
         # lets make ledger for each of these
         ls = []
@@ -454,12 +502,12 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 
 def register(request):
-    print("got request")
+    logger.info("got request")
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
-        print("got post")
+        logger.info("got post")
         if form.is_valid():
-            print('is valid')
+            logger.info('is valid')
             form.save()
             # username = form.cleaned_data.get('username')
             # email = form.cleaned_data.get('email')

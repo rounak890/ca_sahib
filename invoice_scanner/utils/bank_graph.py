@@ -2,6 +2,10 @@ import pandas as pd
 from io import BytesIO
 import base64
 import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use("Agg")  # ✅ Non-GUI backend
+
 
 def plot_to_base64(fig):
     buf = BytesIO()

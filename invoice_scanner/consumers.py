@@ -23,6 +23,7 @@ PROMPT = (
 
 ## HERE I UPLOAD THE TDS AND GST RATES PDF TO GEMINI
 tds_file = client.files.upload(file="static/docs/tds_rates.pdf")
+gst_file = client.files.upload(file="static/docs/gst_rates.pdf")
 print("file uploaded")
 
 # chat = client.chats.create(
@@ -72,6 +73,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             model="gemini-2.5-flash",
             contents=[
                 tds_file,
+                gst_file,
                 *self.conversation_history
             ],
         )

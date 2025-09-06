@@ -61,7 +61,26 @@
 # df = pd.DataFrame(d)
 # print(df.head())
 
-#
-import faiss
+# #
+# import faiss
 
-index = faiss.read_index("vector_index.faiss")
+# index = faiss.read_index("vector_index.faiss")
+
+import json
+import pandas as pd
+
+
+data =  {'invoice_number': '15/I12171', 
+         'date': '2004-01-05', 
+         'total_amount': '8.93', 
+         'gst_number': None, ''
+         'tds_deducted': '0.00', 
+         'vendor_name': 'THE OFFICE SOLUTIONS ORGANISATION', 
+         'vendor_address': 'J.Black & Partners, 9 Shakespeare Road, Wellesbourne, Stratford, Warwickshire, WK4 3VG', 
+         'items': [
+             {'description': 'Ref: D16352004 Sasco 2400188ar', 'quantity': '1', 'unit_price': '8.93', 'total_price': '8.93'}
+             ]
+        }
+
+df = pd.DataFrame(data)
+print(df)
